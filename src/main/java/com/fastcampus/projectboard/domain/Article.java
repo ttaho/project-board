@@ -10,7 +10,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @ToString
@@ -35,6 +37,11 @@ public class Article {
 
     @Setter private String hashtag; //해시태그
 
+    @ToString.Exclude //ToString의 순환참조를 막기위해 끊어주기위해 사용
+    @OrderBy("id") //-> 정렬기준을 id로 한다.
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)//-> article 테이블로부터 온것이다를 명시한것, cascadeType.All-> 모든경우에 대해서 cascade를 적용시킨다.
+    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
+
     // 아래의 필드들은 자동으로 auditing해주기위해 아래와같은 애노테이션을 붙임
     @CreatedDate @Column(nullable = false) private LocalDateTime createdAt; //게시글 생성일시
     //위의 Date는 시스템시간을 하면된다고 치고, 밑의 게시글생성자는 어떻게 auditing을 해줄까?
@@ -42,6 +49,7 @@ public class Article {
     @CreatedBy @Column(nullable = false, length=100) private String createdBy; //게시글 생성자
     @LastModifiedDate @Column(nullable = false)private LocalDateTime modifiedAt; //게시글 수정일시
     @LastModifiedBy @Column(nullable = false, length=100) private String modifiedBy; //게시글 수정자
+
 
     protected Article() {}
 
