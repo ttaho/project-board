@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+
 @DisplayName("JPA 연결 테스트")
 @Import(JpaConfig.class) //-> 테스트시 이 애노테이션을 달지않으면 JpaConfig에서 @EnableJpaAuditing 기능이 작동하지 않는다.
 @DataJpaTest //slice 테스트를 위해 사용
@@ -26,9 +27,10 @@ class JpaRepositoryTest {
         this.articleRepository = articleRepository;
         this.articleCommentRepository = articleCommentRepository;
     }
+
     @DisplayName("select 테스트")
     @Test
-    void givenTestData_whenSelecting_thenWorksFine(){
+    void givenTestData_whenSelecting_thenWorksFine() {
 
         //Given
 
@@ -44,7 +46,7 @@ class JpaRepositoryTest {
 
     @DisplayName("insert 테스트")
     @Test
-    void givenTestData_whenInserting_thenWorksFine(){
+    void givenTestData_whenInserting_thenWorksFine() {
 
         //Given
         long previousCount = articleRepository.count();
@@ -55,12 +57,12 @@ class JpaRepositoryTest {
 
         //articleRepository 카운트가 1증가했는지 확인
         assertThat(articleRepository.count())
-                .isEqualTo(previousCount+1);
+                .isEqualTo(previousCount + 1);
     }
 
     @DisplayName("update 테스트")
     @Test
-    void givenTestData_whenUpdating_thenWorksFine(){
+    void givenTestData_whenUpdating_thenWorksFine() {
 
         //Given
         Article article = articleRepository.findById(1L).orElseThrow(); //1L이라는 아이디를 가진 게시글이 있으면 저장, 없으면 던짐
@@ -80,18 +82,22 @@ class JpaRepositoryTest {
 
     @DisplayName("delete 테스트")
     @Test
-    void givenTestData_whenDeleting_thenWorksFine(){
+    void givenTestData_whenDeleting_thenWorksFine() {
 
         //Given
         Article article = articleRepository.findById(1L).orElseThrow();
         long previousArticleCount = articleRepository.count();
-        long previousArticleCommnetcCount = articleCommentRepository.count();
+        long previousArticleCommnetCount = articleCommentRepository.count();
+        int deletedCommentSize = article.getArticleComments().size();
         //When
-        Article savedArticle = articleRepository.save(article);
+        // 게시글을 지우면 그 게시글의 댓글도 지워진다. 게시글과 댓글은 연관관계 매핑이 되어있음.
+        articleRepository.delete(article);
         //Then
 
-        //articleRepository 카운트가 1증가했는지 확인
+        //articleRepository 카운트가 1감소했는지 확인, articleCommentRepository가 CommentSize만큼 감소했는지 확인.
         assertThat(articleRepository.count())
-                .isEqualTo(previousCount+1);
+                .isEqualTo(previousArticleCount - 1);
+        assertThat(articleCommentRepository.count())
+                .isEqualTo(previousArticleCommnetCount - deletedCommentSize);
     }
 }
