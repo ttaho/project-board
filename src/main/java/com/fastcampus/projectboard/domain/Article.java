@@ -23,9 +23,8 @@ import java.util.Set;
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
-@EntityListeners(AuditingEntityListener.class) //Entity에서도 Auditing을 쓴다는 표시를 해줘야함.
 @Entity
-public class Article {
+public class Article extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //게시글 id
@@ -34,34 +33,33 @@ public class Article {
     //setter를 전체 클래스에 걸지않고 각필드(title,content ....)에 거는 이유는
     //일부러 사용자가 특정 필드에 접근해서 setting하는것을 막기위해서 임.
     //@Column(nullable = false)은 디폴드가 true인데, 널값을 넣을수 없는 필드에만 해당 애노테이션을 추가한다.
-    @Setter @Column(nullable = false) private String title; //게시글 제목
-    @Setter @Column(nullable = false, length=10000) private String content; //게시글 내용
+    @Setter
+    @Column(nullable = false)
+    private String title; //게시글 제목
+    @Setter
+    @Column(nullable = false, length = 10000)
+    private String content; //게시글 내용
 
-    @Setter private String hashtag; //해시태그
+    @Setter
+    private String hashtag; //해시태그
 
     @ToString.Exclude //ToString의 순환참조를 막기위해 끊어주기위해 사용
     @OrderBy("id") //-> 정렬기준을 id로 한다.
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)//-> article 테이블로부터 온것이다를 명시한것, cascadeType.All-> 모든경우에 대해서 cascade를 적용시킨다.
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+//-> article 테이블로부터 온것이다를 명시한것, cascadeType.All-> 모든경우에 대해서 cascade를 적용시킨다.
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
-    // 아래의 필드들은 자동으로 auditing해주기위해 아래와같은 애노테이션을 붙임
-    @CreatedDate @Column(nullable = false) private LocalDateTime createdAt; //게시글 생성일시
-    //위의 Date는 시스템시간을 하면된다고 치고, 밑의 게시글생성자는 어떻게 auditing을 해줄까?
-    //JpaConfig에서 AuditorAware을 사용하여 잡아주는것 같다.
-    @CreatedBy @Column(nullable = false, length=100) private String createdBy; //게시글 생성자
-    @LastModifiedDate @Column(nullable = false)private LocalDateTime modifiedAt; //게시글 수정일시
-    @LastModifiedBy @Column(nullable = false, length=100) private String modifiedBy; //게시글 수정자
-
-
-    protected Article() {}
+    protected Article() {
+    }
 
     private Article(String title, String content, String hashtag) {
         this.title = title;
         this.content = content;
         this.hashtag = hashtag;
     }
+
     public static Article of(String title, String content, String hashtag) {
-        return new Article(title,content,hashtag);
+        return new Article(title, content, hashtag);
     }
 
     @Override
