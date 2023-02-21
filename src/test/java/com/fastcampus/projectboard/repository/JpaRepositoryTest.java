@@ -2,6 +2,7 @@ package com.fastcampus.projectboard.repository;
 
 import com.fastcampus.projectboard.config.JpaConfig;
 import com.fastcampus.projectboard.domain.Article;
+import com.fastcampus.projectboard.domain.ArticleComment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,21 @@ class JpaRepositoryTest {
 
         //When
         List<Article> articles = articleRepository.findAll();
+        List<ArticleComment> articleComments = articleCommentRepository.findAll();
+
+
         //Then
 
         //articles이 NULL이 아니고, 사이즈가 100개 인지 확인
         assertThat(articles)
                 .isNotNull()
-                .hasSize(100);
+                .hasSize(123);
+
+        assertThat(articleComments)
+                .isNotNull()
+                .hasSize(300);
+
+
     }
 
     @DisplayName("insert 테스트")
