@@ -5,11 +5,14 @@ import com.fastcampus.projectboard.domain.QArticle;
 import com.querydsl.core.types.dsl.DateTimeExpression;
 import com.querydsl.core.types.dsl.SimpleExpression;
 import com.querydsl.core.types.dsl.StringExpression;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
 
 
 @RepositoryRestResource
@@ -18,6 +21,7 @@ public interface ArticleRepository extends
         QuerydslPredicateExecutor<Article>,//기본적으로 Article안에 있는 기본검색기능을 추가시켜줌. 하지만 exact 검색만 가능.
         QuerydslBinderCustomizer<QArticle>
 {
+    Page<Article> findByTitle(String title, Pageable pageable);
     @Override
     default void customize(QuerydslBindings bindings, QArticle root){
         bindings.excludeUnlistedProperties(true); //리스팅을 하지않은 property를 검색에서 제외시키는것을 true로 한다.-> 아마 이게 필터를 ON시키는거인듯
