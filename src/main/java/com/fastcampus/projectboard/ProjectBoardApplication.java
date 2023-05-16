@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @ConfigurationPropertiesScan
 @SpringBootApplication
+//dddddd
 public class ProjectBoardApplication {
 
     public static void main(String[] args) {
