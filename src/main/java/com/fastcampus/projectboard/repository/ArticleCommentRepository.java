@@ -16,6 +16,7 @@ import java.util.List;
 @RepositoryRestResource
 //dafsdaffsdfsd
 //sssss
+//dafsdaasdf
 public interface ArticleCommentRepository extends
         JpaRepository<ArticleComment, Long>,
         QuerydslPredicateExecutor<ArticleComment>,
